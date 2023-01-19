@@ -1,0 +1,76 @@
+============================================================================================
+we are asked to create a pod called jekyll with an init container with the following properties:
+
+pod: 'jekyll' has an initContainer, name: 'copy-jekyll-site', image: 'kodekloud/jekyll'
+
+initContainer: 'copy-jekyll-site', command: [ "jekyll", "new", "/site" ] (command to run: jekyll new /site)
+
+pod: 'jekyll', initContainer: 'copy-jekyll-site', mountPath = '/site'
+
+pod: 'jekyll', initContainer: 'copy-jekyll-site', volume name = 'site'
+
+pod: 'jekyll', container: 'jekyll', volume name = 'site'
+
+pod: 'jekyll', container: 'jekyll', mountPath = '/site'
+
+pod: 'jekyll', container: 'jekyll', image = 'kodekloud/jekyll-serve'
+
+pod: 'jekyll', uses volume called 'site' with pvc = 'jekyll-site'
+
+pod: 'jekyll' uses label 'run=jekyll'
+
+solution: 
+run: kubectl run jekyll --image=kodekloud/jekyll-serve --dry-run=client -o yaml > jekyll.yaml
+
+This command generates a yaml file that you use to create a pod,after creating this file we can 
+start adding other objects:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: jekyll
+  name: jekyll
+spec:
+  containers:
+  - image: kodekloud/jekyll-serve
+    name: jekyll
+    volumeMounts:
+            - name: site
+              mountPath: /site
+    resources: {}
+  initContainers:
+  - name: copy-jekyll-site
+    image: kodekloud/jekyll
+    command: ["jekyll", "new", "/site"]
+    volumeMounts:
+            - name: site
+              mountPath: /site
+  volumes:
+          - name: site
+            persistentVolumeClaim:
+                    claimName: jekyll-site
+
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+After this we run kubectl create -f jekyll.yaml
+2nd step:
+Initially we would have done this before carrying out the first step but there's nothing 
+wrong in doing it later.
+creating a pvc to link with the newlly created pod.
+the pvc contains:
+Storage Request: 1Gi
+
+Access modes: ReadWriteMany
+
+pvc name = jekyll-site, namespace = development
+
+'jekyll-site' PVC should be bound to the PersistentVolume called 'jekyll-site'.
+
+
+
+
+
