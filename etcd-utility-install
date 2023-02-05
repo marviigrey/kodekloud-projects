@@ -1,0 +1,14 @@
+     #Installing ETCD-utility for k8s cluster on ubuntu OS.
+     
+      sudo apt-get update
+      #download Binary file for installation either 
+      wget https://github.com/etcd-io/etcd/releases/download/v3.6.0-alpha.0/etcd-v3.6.0-alpha.0-linux-amd64.tar.gz --no-check-certificate 
+      #run executeables
+      tar -xvf etcd-v3.6.0-alpha.0-linux-amd64.tar.gz 
+       #delete the tar.gz file as it is no longer useful
+      rm -rf etcd-v3.6.0-alpha.0-linux-amd64.tar.gz 
+      # move the ectd files to the usr/local/bin
+     sudo mv etcd-v3.6.0-alpha.0-linux-amd64/etcd* /usr/local/bin
+     #create a dircetory for etcd data 
+     sudo mkdir -p /etc/etcd /var/lib/etcd
+     
